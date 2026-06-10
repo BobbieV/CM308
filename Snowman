@@ -1,0 +1,140 @@
+//We start with zero snowflakes and     
+//no snowman
+
+let numFlakes = 0
+let moreSnow = numFlakes*-1/1.1
+
+function setup() {
+  createCanvas(400, 400);
+}
+
+function draw() {
+  background("#608da2");
+  //this thing is moving way too fast,   
+  //so let's slow it down
+  frameRate(30)
+
+  //I want to make it snow. Let's         
+  //randomly place random-sized           
+  //snowflakes everywhere
+  
+  let x = random(0, 400)
+  let y = random(0, 400)
+  let flakeSize = random(0,10)
+  
+  function snowflakes() {
+    circle(x, y, flakeSize)
+  }
+  
+    snowflakes()
+  
+    //We will increment the snowflakes     
+    //and use the number of snowflakes     
+    //to determine what happens next
+ 
+    numFlakes++
+   
+    //Let's let the snow build up on the ground
+  
+    if (numFlakes < 150) {
+      moreSnow = numFlakes*-1/1.1
+    } 
+    rect(0, 400, 400, moreSnow)                     
+                         
+    //this is the snowman butt - it         
+    //magically appears when enough snow   
+    //hits the ground!
+  
+    function snowmanButt() {
+      circle(300, 300, 100)
+    }
+  
+    if (numFlakes > 55) {
+      snowmanButt()
+    }
+    
+    //this is the snowman belly - it 
+    //magically appears when enough snow 
+    //hits the ground!
+  
+    function snowmanBelly() {
+      circle(300, 225, 75)
+    }  
+    if (numFlakes > 75) {
+      snowmanBelly()
+    }
+  
+    //this is the snowman head - it         
+    //magically appears when enough snow   
+    //hits the ground!
+  
+    function snowmanHead() {
+      circle(300, 175, 50)
+    }
+    if (numFlakes > 100) {
+      snowmanHead()
+    }
+  
+    //we'll let him have a face too.
+  
+    //eyes
+    if (numFlakes > 125) {
+      fill("black")
+      circle(307, 169, 10)
+      circle(293, 169, 10)
+      fill("white")
+      circle(307, 170, 9)
+      circle(293, 170, 9)
+      fill("brown")
+      circle(307,171, 5)
+      circle(293, 171, 5)
+      fill("white")
+    }
+    //nose
+    if (numFlakes > 150) {
+      fill("orange")
+      triangle(300,174, 265, 180, 302,       185)
+      fill("white")
+    }
+    //mouth
+    if (numFlakes > 175){
+      fill("black")
+      circle(293, 187, 5)
+      circle(306, 187, 5) 
+      circle(300, 190, 5)
+      fill("white")
+    }
+    //we'll give him some arms too
+    x1 = 250
+    y1 = 250
+    x2 = 265
+    y2 = 210
+  
+    function arms() {
+      line(x1, y1, x2, y2)
+      line(350, 250, 335, 210)
+    }
+    if (numFlakes > 200){
+      arms()
+    }
+  
+    //and now, with help from ChatGPT to figure this one     
+    //out, let's bring him to life
+    function waveHello() {
+      let shoulderX = 350
+      let shoulderY = 250
+      let angle = sin(frameCount * 0.1) * HALF_PI / 1.5  
+      let armLength = 25
+      let handX = shoulderX + cos(angle) * armLength
+      let handY = shoulderY - sin(angle) * armLength
+      
+      line(shoulderX, shoulderY, handX, handY)
+    }
+  
+    if (numFlakes >200) {
+      waveHello()
+    }
+}
+
+
+

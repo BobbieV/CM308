@@ -1,0 +1,258 @@
+let angle = 1;
+
+function setup() {
+  createCanvas(600, 600, WEBGL);
+  angleMode(DEGREES);
+}
+
+function draw() {
+  background("lightblue");
+  orbitControl();
+  
+  // grass
+  push();
+  //put the grass on the ground
+  translate(0, 325, 0); 
+  rotateX(90);
+  fill("green");
+  plane(100000, 100000);
+  pop();
+
+  cow();
+  ufo();
+}
+
+function cow() {
+  stroke(0,0,0, 25);
+  
+  //head
+  push();
+  fill("brown");
+  sphere(50);
+  push();
+  translate(14, -30, 0);
+  ellipsoid(23, 25, 20);
+  pop();
+  push();
+  translate(-14, -30, 0);
+  ellipsoid(23, 25, 20);
+  pop();
+  //horns
+  push();
+  fill("beige");
+  push();
+  //horn 1
+  rotate(110);
+  translate(-25, 60, 0);
+  cone(10, 30);
+  pop();
+  //horn 2
+  rotate(-110);
+  translate(25, 60, 0);
+  cone(10, 30);
+  pop();
+  //snout
+  translate(0,20,25 );
+  rotateX(-15);
+  ellipsoid(50,40,70);
+  pop();
+  //nose
+  push();
+  fill("rosybrown");
+  rotateX(-15);
+  push();
+  translate(0,8, 83);
+  ellipsoid(27,25,10);
+  pop();
+  push();
+  translate(0, 6, 86);
+  ellipsoid(10,22, 15);
+  pop();
+  translate(0, 13, 85);
+  ellipsoid(25, 15, 15);
+  pop();
+  push();
+  fill("black")
+  translate(0, 28, 78);
+  ellipsoid(25,23,15);
+  pop();
+  //mouth
+  push();
+  translate(0,38, 78);
+  stroke(0,0,0,30);
+  fill("brown");
+  ellipsoid(25, 23,15);
+  pop();
+  push();
+  fill("black");
+  translate(0,40,68);
+  rotateY(50);
+  ellipsoid(26,8, 25);
+  pop();
+  //ears
+  push();
+  fill("brown");
+  //left ear
+  push();
+  translate(-65, -20, 0);
+  ellipsoid(25, 15, 10);
+  pop();
+  //right ear
+  translate(65, -20, 0);
+  ellipsoid(25,15,10);
+  pop();
+  //eyes
+  push();
+  fill("brown");
+  //left eye
+  push();
+  translate(-20,-10, 40);
+  ellipsoid(16,16,10);
+  fill("white");
+  ellipsoid(15, 15, 13);
+  fill("black");
+  ellipsoid(14, 14, 15);
+  pop();
+  push();
+  translate(20,-10, 40);
+  ellipsoid(16,16,10);
+  fill("white");
+  ellipsoid(15, 15, 13);
+  fill("black");
+  ellipsoid(14, 14, 15);
+  pop();
+  pop();
+  //neck
+  push();
+  fill("brown");
+  translate(0, 50, 0);
+  cylinder(35, 80);
+  pop();
+  
+  //body
+  push();
+  fill("brown")
+  //chest
+  push();
+  translate(0, 150, 0);
+  ellipsoid(75, 80, 80);
+  pop();
+  //torso
+  push();
+  rotateX(-5);
+  translate(0, 165, -75);
+  ellipsoid(55, 80, 100);
+  pop();
+  //backside
+  push();
+  translate(0, 155, -160);
+  ellipsoid(85, 80, 80);
+  pop();
+  pop();
+  //udders
+  push();
+  fill("pink");
+  push();
+  translate(0, 230, -135);
+  ellipsoid(60, 35, 45);
+  pop();
+  //teat 1
+  push();
+  translate(-20, 270, -145);
+  ellipsoid(7,9,7);
+  pop();
+  //teat 2
+  push();
+  translate(20, 270, -145);
+  ellipsoid(7,9,7);
+  pop();
+  //teat 3
+  push();
+  translate(-20, 270, -125);
+  ellipsoid(7,9,7);
+  pop();
+  //teat 4
+  push();
+  translate(20, 270, -125);
+  ellipsoid(7,9,7);
+  pop();
+  
+  //legs
+  push();
+  fill("brown");
+  //moooove em all down low
+  translate(0, 250, 0);
+  push();
+  translate(40, 0, 0);
+  cylinder(25, 120);
+  pop();
+  push();
+  translate(-40, 0, 0);
+  cylinder(25, 120);
+  pop();
+  push();
+  translate(50, 0, -160);
+  cylinder(25, 120);
+  pop();
+  push();
+  translate(-50, 0, -160);
+  cylinder(25, 120);
+  pop();
+  //hooves
+  push();
+  fill("black");
+  translate(0, 65, 0);
+  push();
+  translate(40, 0,0);
+  cylinder(25, 20);
+  pop();
+  push();
+  translate(-40, 0,0);
+  cylinder(25, 20);
+  pop();
+  push();
+  translate(50, 0,-160);
+  cylinder(25, 20);
+  pop();
+  push();
+  translate(-50, 0,-160);
+  cylinder(25, 20);
+  pop();
+  pop();
+  pop();
+  //tail
+  fill("brown");
+  translate(0, 135, -245);
+  rotateX(-40);
+  ellipsoid(2,50,2);
+  pop();
+}
+
+function ufo() {
+  push();
+  fill("lightSlateGray");
+  stroke(0,0,0,30);
+  translate(0, -750, -25);
+  //it would be more fun if this thing moved
+  rotateY(angle);
+  //ufo orb
+  sphere(90);
+  //ufo saucer
+  ellipsoid(200, 25, 200, 24 , 10);
+  pop();
+  //the beam is green
+  push();
+  fill(0, 255, 0, 35);
+  noStroke();
+  //move the beam over the cow
+  translate(0, -175, -25);
+  //flip the beam in the right direction
+  rotateX(180);
+  //why use numbers when you can use variables?
+  let coneRadius = 400;
+  let coneHeight = 975;
+  cone(coneRadius, coneHeight, 24, 20);
+  //ufo rotation speed
+  angle += 0.6;
+pop();
+}

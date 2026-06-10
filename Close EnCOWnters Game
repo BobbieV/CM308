@@ -1,0 +1,634 @@
+let angle = 1;
+let grass;
+let numCows;
+let minDistance;
+let cowPositions = [];
+let cowY = 0;
+let lights;
+let numLights;
+let radius;
+let lightsAngle;
+let ufoX = -1;
+let ufoY = -1250;
+let ufoZ = -25;
+let beamX = ufoX -1;
+let beamY = ufoY + 775;
+let beamZ = ufoZ -25;
+let beamIsOn;
+let moo;
+let music;
+let beamSound;
+let flySound;
+let score = 0;
+let timer = 60;
+let font;
+let hud;
+let gameOver = false;
+
+function preload() {
+  font = loadFont("Roboto.ttf");
+  console.log(font);
+  grass = loadImage(
+    "grass for plane (2000 x 2000 px).jpg");
+  
+  moo = loadSound("moo.wav");
+  beamSound = loadSound("Beam.wav");
+  
+  flySound = loadSound("flyShip.wav");
+}
+
+function setup() {
+  createCanvas(600, 600, WEBGL);
+  angleMode(DEGREES);
+  
+  hud = createGraphics(width, height);
+
+  //how many cows in this herd?
+  numCows = int(random(1, 25));
+  
+  //we want to make sure they stand far
+  //enough apart from each other
+  //no siamese twins here.
+  minDistance = 350;
+
+  //we are creating an array of info
+  //about our herd using a loop that 
+  //keeps going until it has the same
+  //number of objects as numCows
+  while (cowPositions.length < numCows) {
+    //we are proposing random positions for
+    //cows and assigning color & transparency
+    const candidate = {
+      x: random(-2000, 2000), 
+      y: random(360),
+      z: random(-2000, 2000), 
+      color: cowColorFinder(),
+      cowY : 0,
+      cowAlpha : 255
+    };
+    let tooClose = false;
+
+    //we need to check the distance of the 
+    //randomly generated x, y and z values
+    //to make sure they are greater than
+    //our assigned minimum distance apart
+    //if the positions are too close to an 
+    //already existing cow positions in the 
+    //array, we need to break out of the loop and
+    //try again. No need to keep comparing to 
+    //the other values in the array
+    for (const c of cowPositions) {
+      if (
+      dist(candidate.x, candidate.z, c.x, c.z) < minDistance) {     
+        tooClose = true;
+        break; 
+      } 
+    }
+    //if they are not too close, they
+    //can be added to the array                   
+    if (!tooClose) cowPositions.push(candidate);
+    }
+
+  //I like to see this stuff in the console,
+  //so I left it here after debugging, even 
+  //though it isn't really necessary
+  //console.log(
+   // "finished generating", 
+   // cowPositions.length,
+   // "cows")
+}
+
+function draw() {
+  background("lightblue");
+  orbitControl();
+  directionalLight(255,255,225, 0,1,0)
+
+  // grass
+  push();
+  //put the grass on the ground
+  translate(0, 325, 0); 
+  rotateX(90);
+  texture(grass);
+  plane(100000, 100000);
+  pop();
+
+  drawCows();
+  ufo();
+  flyTheShip();
+  updateTimer();
+  
+drawTimer();
+  if (timer === 0 ) {
+    gameOver = true
+    //drawGameOver();
+    noLoop();
+    return;
+  }
+}
+
+function drawTimer() {
+  console.log(timer)
+  
+  hud.clear();
+  hud.textFont(font);
+    hud.textFont(font);
+  hud.textAlign(CENTER, TOP);
+  hud.textSize(32);
+
+  hud.textSize(600);
+  hud.fill(timer > 10 ? "green" : "red");
+      
+  hud.text(timer, width/2, 50);
+
+  push();
+  resetMatrix();
+  translate(-width / 2, -height / 2)
+  drawingContext.disable(
+    drawingContext.DEPTH_TEST);
+  
+  image(hud, -width / 2, -height / 2, width, height);
+
+  drawingContext.enable(
+    drawingContext.DEPTH_TEST);
+  pop();
+}
+
+function updateTimer() {
+  if (frameCount % 60 == 0 && timer > 0) { 
+    timer--;
+  }  
+}
+  
+function drawGameOver() {
+
+    //push();
+    //resetMatrix();
+   // drawingContext.disable(
+    //  drawingContext.DEPTH_TEST);
+
+  hud.clear();
+  hud.background(0);
+  hud.textFont(font);
+  hud.fill(0, 255, 0);
+  hud.textAlign(CENTER, CENTER);
+  hud.textSize(56);
+  hud.text(
+    "GAME OVER", 
+    hud.width / 2, 
+    hud.height / 2);
+  
+  push();
+  resetMatrix();
+  translate(-width / 2, -height / 2)
+  drawingContext.disable(
+    drawingContext.DEPTH_TEST);
+  image(hud, -width / 2, -height / 2, width, height);
+  drawingContext.enable(
+    drawingContext.DEPTH_TEST);
+    pop();
+
+}
+  
+function ufo() {
+  //the beam doesn't turn on til we say so
+  beamIsOn = false;
+
+  push();
+  fill("lightSlateGray");
+  stroke(0,0,0,30);
+  translate(ufoX, ufoY, ufoZ);
+  
+  
+  //ufo orb
+  ellipsoid(300, 200, 300, 24, 5);
+  
+
+  //rotate the saucer
+  rotateY(angle);
+  
+  //ufo saucer
+  ellipsoid(600, 50, 600, 24 , 10);
+  
+  //this thing needs lights
+  let sphereX;
+  let sphereY = 0;
+  let sphereZ;
+  
+  radius = 590;
+  
+  //we'll create 8 lights and distribute them
+  //around the edge of the saucer
+  numLights = 8;
+  for (let i = 0; i < numLights; i++) {
+    //Chat said use i*numLights*TWO_PI, but 
+    //that results in clumped up lights
+    //experimentation says use 5.5 in place of TWO_PI
+    lightsAngle = i * numLights* 5.5;
+    //Chat told me how to do this part
+    sphereX = cos(lightsAngle) * radius;
+    sphereZ = sin(lightsAngle) * radius;
+    
+    push();
+    //move the lights into position
+    translate(sphereX, sphereY, sphereZ);
+    //I can't tell if the pointLight works, but I'm
+    //leaving it because I want to believe
+    pointLight(255,191,0, sphereX, sphereY, sphereZ);
+    emissiveMaterial(255, 191,0);
+    sphere(12);
+    pop();
+    
+  }
+  //ufo rotation speed
+  angle += 100.6;
+  pop();
+}
+
+//let's bring this baby to life
+function flyTheShip() {
+  if (keyIsPressed) {
+    if (keyCode == UP_ARROW) {
+      ufoZ -= 200;
+      beamZ -= 200;
+      //keeps the sounds from restarting
+      //and crashing out the audio buffer
+      if (!flySound.isPlaying()) {
+        flySound.play()
+      }
+    }
+    if (keyCode == DOWN_ARROW) {
+      ufoZ += 200;
+      beamZ += 200;
+      //keeps the sounds from restarting
+      //and crashing out the audio buffer
+      if (!flySound.isPlaying()) {
+      flySound.play()
+      }
+    }
+    if (keyCode == LEFT_ARROW) {
+      ufoX -= 200;
+      beamX -= 200;
+      //keeps the sounds from restarting
+      //and crashing out the audio buffer
+      if (!flySound.isPlaying()) {
+      flySound.play()
+      }
+    }
+    if (keyCode == RIGHT_ARROW) {
+      ufoX += 200;
+      beamX += 200;
+      //keeps the sounds from restarting
+      //and crashing out the audio buffer
+      if (!flySound.isPlaying()) {
+      flySound.play()
+      }
+    }
+    //use the spacebar to operate the beam
+    if (keyCode == 32) {
+      beamIsOn = !beamIsOn
+      if (beamIsOn == true) {
+        beam();
+        //keeps the sounds from restarting
+        //and crashing out the audio buffer
+        if (!beamSound.isPlaying()) {
+            beamSound.play();
+        }
+      } 
+    }
+  }
+}
+
+function beam(ufoX, ufoY, ufoZ) {
+  //the beam is green
+  push();
+  fill(0, 255, 0, 35);
+  noStroke();
+  //move the beam over the cow
+  translate(beamX, beamY, beamZ);
+  //flip the beam in the right direction
+  rotateX(180);
+  //why use numbers when you can use variables?
+  let coneRadius = 400;
+  let coneHeight = 1575;
+  //make it GLOW
+  emissiveMaterial(0,30,0, 1)
+  cone(coneRadius, coneHeight, 24, 20);
+  pop();
+}
+
+function drawCows() {
+  //for as many objects are in our array
+  for (let i = cowPositions.length -1; i >= 0; i--) {
+    let c = cowPositions[i]; 
+    push();
+    //place them in their custom spots
+    translate(c.x,c.cowY, c.z);
+    //rotate them
+    rotateY(c.y);
+    //draw the cow, using the color info
+    cow(c.color, c.cowAlpha);
+    
+    //check to see if the cow is in the beam
+    if (beamIsOn) {
+      let d = dist(c.x, c.z, beamX, beamZ);
+      //if the cow is in the beam
+      //lift it up and make it disappear
+      if (d < 300) {
+        c.cowY -= 10
+        c.cowAlpha-= 5
+      }
+    }
+    pop();
+    
+    //we need to remove the transparent cows, 
+    //so we don't see ghosts once the ship
+    //sucks them up
+    if (c.cowAlpha == 0 || c.cowY < -2000) {
+    cowPositions.splice(i, 1);
+      //once the cow is in the ship, we hear about it
+      moo.play()
+    }
+  }
+}
+//this function defines how cows are 
+//assigned their colors
+function cowColorFinder() {
+  const cowColorNum = random(1000);
+  
+  //there is a suuuuuper slim chance
+  //that you will see a magenta cow
+  if (
+    cowColorNum <= 1) 
+    return [255, 0, 255]
+  //chances are, the cow is brown
+  else if (
+    cowColorNum > 1 && cowColorNum < 900) 
+    return [150, 75, 0]
+  //but white ones do pop up here and there
+  else return [255, 255, 255, 255] 
+}
+
+//this is how to build a cow, passing in the
+//info that we obtained regarding color
+function cow(cowColor, cowAlpha) {
+  //again, not necessary but I like to see it
+ // console.log("cowColor is", cowColor)
+ // console.log("cowAlpha is", cowAlpha)
+  
+  //modify the stroke depending on
+  //the cow transparency
+  if (cowAlpha > 50) {
+  stroke(0,0,0, cowAlpha-200);
+  } else {
+    noStroke();
+  }
+  
+  //head
+  push();
+  fill(
+    cowColor[0], 
+    cowColor[1], 
+    cowColor[2], 
+    cowAlpha);
+  sphere(50);
+  push();
+  translate(14, -30, 0);
+  ellipsoid(23, 25, 20);
+  pop();
+  push();
+  translate(-14, -30, 0);
+  ellipsoid(23, 25, 20);
+  pop();
+  //horns
+  push();
+  //beige
+  fill(245, 245, 220, cowAlpha);
+  push();
+  //horn 1
+  rotate(110);
+  translate(-25, 60, 0);
+  cone(10, 30);
+  pop();
+  //horn 2
+  rotate(-110);
+  translate(25, 60, 0);
+  cone(10, 30);
+  pop();
+  //snout
+  fill(
+    cowColor[0], 
+    cowColor[1], 
+    cowColor[2], 
+    cowAlpha);
+  translate(0, 20, 25);
+  rotateX(-15);
+  ellipsoid(50, 40, 70);
+  pop();
+  //nose
+  push();
+  //rosybrown
+  fill(188, 143, 143, cowAlpha);
+  rotateX(-15);
+  push();
+  translate(0, 8, 83);
+  ellipsoid(27, 25, 10);
+  pop();
+  push();
+  translate(0, 6, 86);
+  ellipsoid(10, 22, 15);
+  pop();
+  translate(0, 13, 85);
+  ellipsoid(25, 15, 15);
+  pop();
+  push();
+  //black
+  fill(0, 0, 0, cowAlpha)
+  translate(0, 28, 78);
+  ellipsoid(25, 23, 15);
+  pop();
+  //mouth
+  push();
+  translate(0, 38, 78);
+  //stroke(0, 0, 0, 30);
+  fill(
+    cowColor[0], 
+    cowColor[1], 
+    cowColor[2], 
+    cowAlpha);
+  ellipsoid(25, 23, 15);
+  pop();
+  push();
+  //black
+  fill(0, 0, 0, cowAlpha);
+  translate(0, 40, 68);
+  rotateY(50);
+  ellipsoid(26, 8, 25);
+  pop();
+  //ears
+  push();
+  fill(
+    cowColor[0], 
+    cowColor[1], 
+    cowColor[2], 
+    cowAlpha);
+  //left ear
+  push();
+  translate(-65, -20, 0);
+  ellipsoid(25, 15, 10);
+  pop();
+  //right ear
+  translate(65, -20, 0);
+  ellipsoid(25, 15, 10);
+  pop();
+  //eyes
+  push();
+  //brown
+  fill(150, 75, 0, cowAlpha);
+  //left eye
+  push();
+  translate(-20, -10, 40);
+  ellipsoid(16, 16, 10);
+  //white
+  fill(255, 255, 255, cowAlpha);
+  ellipsoid(15, 15, 13);
+  //black
+  fill(0, 0, 0, cowAlpha);
+  ellipsoid(14, 14, 15);
+  pop();
+  push();
+  translate(20,-10, 40);
+  ellipsoid(16,16,10);
+  //white
+  fill(255, 255, 255, cowAlpha);
+  ellipsoid(15, 15, 13);
+  //black
+  fill(0, 0, 0, cowAlpha);
+  ellipsoid(14, 14, 15);
+  pop();
+  pop();
+  //neck
+  push();
+  fill(
+    cowColor[0], 
+    cowColor[1], 
+    cowColor[2], 
+    cowAlpha);
+  translate(0, 50, 0);
+  cylinder(35, 80);
+  pop();
+  
+  //body
+  push();
+  fill(
+    cowColor[0], 
+    cowColor[1], 
+    cowColor[2], 
+    cowAlpha);
+  //chest
+  push();
+  translate(0, 150, 0);
+  ellipsoid(75, 80, 80);
+  pop();
+  //torso
+  push();
+  rotateX(-5);
+  translate(0, 165, -75);
+  ellipsoid(55, 80, 100);
+  pop();
+  //backside
+  push();
+  translate(0, 155, -160);
+  ellipsoid(85, 80, 80);
+  pop();
+  pop();
+  //udders
+  push();
+  //pink
+  fill(255, 192, 203, cowAlpha);
+  push();
+  translate(0, 230, -135);
+  ellipsoid(60, 35, 45);
+  pop();
+  //teat 1
+  push();
+  translate(-20, 270, -145);
+  ellipsoid(7,9,7);
+  pop();
+  //teat 2
+  push();
+  translate(20, 270, -145);
+  ellipsoid(7,9,7);
+  pop();
+  //teat 3
+  push();
+  translate(-20, 270, -125);
+  ellipsoid(7,9,7);
+  pop();
+  //teat 4
+  push();
+  translate(20, 270, -125);
+  ellipsoid(7,9,7);
+  pop();
+  
+  //legs
+  push();
+  fill(
+    cowColor[0], 
+    cowColor[1], 
+    cowColor[2], 
+    cowAlpha);
+  //moooove em all down low
+  translate(0, 250, 0);
+  push();
+  translate(40, 0, 0);
+  cylinder(25, 120);
+  pop();
+  push();
+  translate(-40, 0, 0);
+  cylinder(25, 120);
+  pop();
+  push();
+  translate(50, 0, -160);
+  cylinder(25, 120);
+  pop();
+  push();
+  translate(-50, 0, -160);
+  cylinder(25, 120);
+  pop();
+  //hooves
+  push();
+  //black
+  fill(0, 0, 0, cowAlpha);
+  translate(0, 65, 0);
+  push();
+  translate(40, 0, 0);
+  cylinder(25, 20);
+  pop();
+  push();
+  translate(-40, 0, 0);
+  cylinder(25, 20);
+  pop();
+  push();
+  translate(50, 0, -160);
+  cylinder(25, 20);
+  pop();
+  push();
+  translate(-50, 0, -160);
+  cylinder(25, 20);
+  pop();
+  pop();
+  pop();
+  //tail
+ fill(
+   cowColor[0], 
+   cowColor[1], 
+   cowColor[2], 
+   cowAlpha);
+  translate(0, 135, -245);
+  rotateX(-40);
+  ellipsoid(2, 50, 2);
+  pop();
+}
+
+
+

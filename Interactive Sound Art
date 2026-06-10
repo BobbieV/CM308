@@ -1,0 +1,191 @@
+// First let's declare some variables we're gonna need
+
+// so we can access the mic and reference how loud it is
+let mic;
+let vol;
+
+// we're gonna need to know where things are going
+let yPosition;
+let xPosition;
+
+// this is how we're gonna run the loop
+let numCircles;
+
+// things are gonna happen with color
+let r;
+let g;
+let b;
+let a;
+
+// let's get started
+// we need a canvas that adapts to it's window
+function setup() {
+  createCanvas(windowWidth,windowHeight);
+  
+  // I keep messing with the frame rate, 
+  // I'm not sure if it affects anything
+  // but I'm not ready to delete this yet
+  //frameRate(50)
+ 
+  // we're gonna start with a pretty
+  // white background
+  // I want the background in the setup
+  // so it will keep drawing on top of it
+  // and not start fresh each time it runs
+  background(255);
+  
+  // let's define our mic variable
+  // and turn it on
+  mic = new p5.AudioIn();
+  mic.start();
+}
+
+// now for the fun stuff
+function draw() {
+  
+  // we gotta make the numbers big
+  // enough to work with
+  vol = mic.getLevel() * 1500;
+
+  // I want my circles to appear
+  // in random locations on the canvas
+  xPosition = random(width)
+  yPosition = random(height)
+  
+  // I want the volume to dictate how
+  // big the circles are and I'm going 
+  // to multiply it by one of the most
+  // fun numbers. JUST FOR FUN.
+  diameter = vol * 3.14
+  
+  // I probably should have started the number
+  // of circles at zero, because technically,
+  // zero circles exist. But I didn't.
+  numCircles = 1
+  
+  // I want my circles to be very transparent but
+  // I don't want them all to be exactly the same
+  a = random(5)
+  
+  // Next we'll define how object 
+  // color determination happens 
+  // based on the volume levels
+  // ChatGPT helped me figure out 
+  // what numbers to plug in here
+  
+  // if the volume is less than ten,
+  // our color values will generate white
+  if (vol < 10) {
+    r = 255
+    g = 255
+    b = 255
+  }
+
+  // between ten and 40, pink/magenta
+  if (vol > 10 && vol < 40 ) {
+    r = random (200, 255)
+    g = random (80)
+    b = random(150, 255)
+  }
+  
+  // violet
+  if (vol > 40 && vol < 80) {
+    r = random(150, 200)
+    g = random(80)
+    b = random(150, 255)
+  } 
+  
+  // indigo
+    if (vol > 80 && vol < 120) {
+    r = random(75, 130)
+    g = random(80)
+    b = random(130, 200)
+  }
+  
+  // blue
+   if (vol > 120 && vol < 160) {
+    r = random(0, 80)
+    g = random(100)
+    b = random(180, 255)
+  }
+  
+  // green
+  if (vol > 160 && vol < 200) {
+    r = random(0, 80)
+    g = random(150, 255)
+    b = random(100)
+  }
+  
+   //white
+  if (vol > 200) {
+    r= 255
+    g=255
+    b=255
+  }
+  
+  // now that we know what volume defines 
+  // which color, let's start a loop to 
+  // draw our objects using numCircles
+  while (numCircles < 75) {
+    
+    // let's give them color
+    // and make the stroke a
+    // little different
+    fill(r,g,b,a)
+    stroke(r+vol, g+vol, b+vol)
+    strokeWeight(random(1))
+
+
+    // let's add some conditional logic in our loop
+    // if the volume is above the threshold, 
+    // we get triangles that appear in slightly
+    // random locations along the edges of the canvas
+    if(vol > 76) {
+        triangle(random(width - 1), 
+        random(height / 2),
+        random(width / 2, width - 1),
+        random(height / 2, height - 1),
+        random(1, width - 1),
+        random(height / 3,height -1))
+      }
+    
+      // if the volume happens to be roughly 75
+      // we get a giant circle in a random location
+      // based off of the volume and a fun number
+      if (vol > 74 && vol < 76) {
+        circle(vol * 3.14,vol * 3.14, vol * 100)
+      }
+    
+      // if the volume is below 74 we get circles    
+      if (vol > 10 && vol < 74) {
+        circle(xPosition, yPosition, diameter)
+      }
+    
+      // if the volume is below 10 a big white 
+      // square blanks out our canvas
+      if (vol < 10) {
+        fill("white")
+        square(0, 0, width)
+      }
+    
+      // we increment numCircles (probably should have
+      // been called numObjects, but there were no 
+      // triangles when numCircles was born)
+      numCircles++
+    
+    //console.log("vol =", vol,
+    //          "r =", r, 
+    //          "g =", g,
+    //          "b =", b,
+    //          "numCircles =", numCircles, 
+    //          "windowWidth =", windowWidth,
+    //          "windowHeight =", windowHeight,
+    //          "height =", height,
+    //          "width =", width)
+  
+}
+  function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+    redraw()
+  }  
+}

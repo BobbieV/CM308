@@ -1,0 +1,75 @@
+// Let's create an homage to Andrew James!
+function setup() {
+  createCanvas(400, 400);
+  // I want each rendering to remain on screen so background() is in my setup function
+  background("darkblue")
+}
+
+function draw() {
+  // I only want this to render a single image, dictated by my for loop, so I get rid of the automatic loop
+  noLoop()
+  // I want this loop to create 1300 circles
+  for (let numCircles = 0; numCircles < 1300;               numCircles++){
+  
+  
+    //I want my circles to appear randomly on the x & y axis at random sizes up to 35 pixels in diameter
+    let x = random(400)
+    let y = random(400)
+    let diameter = random(35)
+  
+    // I want my colors to generate based on their position on the y axis
+    //I want red tones at the top
+    if (y < 100) {
+      r = random (150, 255)
+      g = random(50, 100)
+      b = 0
+    }
+    
+    // I want more yellow and orange below that
+    if (y > random(90,110) && y < 200) {
+      r = random(200, 255)
+      g = random (150, 215)
+      b = random(66)
+    }
+  
+    // Below that should be more teal shades
+    if (y > random(190, 210) && y < 300) {
+      r = random(66)
+      g = random(170, 255)
+      b = random (150, 255)
+    }
+  
+    // At the bottom I want darker blues
+    if (y > random(275,300) && y<400) {
+      r = random(90, 100)
+      g = random (100, 150)
+      b = random (200, 255)
+    }
+    
+    // I need some pinks in the upper right quadrant
+    if (y< random(190, 210) && x > random(225, 250) && y > 75) {
+      r= random(200,255)
+      g= random(175, 200)
+      b= random(175, 210)
+    }
+  
+    // Give each circle a color based on their random variables
+    fill(r, g, b)
+  
+    // Outline each circle with a randomly-assigned, yet fill-adjacent color
+    let randomStroke = random(50)
+    
+    if (randomStroke >25){
+      stroke(r+random(75), g+random(75), b+random(75))
+      } else {
+      stroke(r-random(50), g - random(50), b - random(150))
+      }
+    
+    // Draw them circles
+    circle(x,y,diameter)
+    circle(x, y, diameter/1.5)
+    circle(x, y, diameter/2)
+    circle(x,y, diameter/3)
+    circle(x, y, diameter/4)
+    }
+}

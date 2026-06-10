@@ -1,0 +1,163 @@
+let color1;
+let color2;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  frameRate(1);
+  rectMode(CENTER);
+}
+
+function preload() {
+  logoFont1 = loadFont('RubikGlitch-Regular.ttf');
+  logoFont2 = loadFont('ClimateCrisis-Regular-VariableFont_YEAR.ttf')
+  logoFont3 = loadFont('Notable-Regular.ttf')
+  logoFont4 = loadFont('Jost-VariableFont_wght.ttf');
+  logoFont5 = loadFont('Amarante-Regular.ttf');
+  logoFont6 = loadFont('Barrio-Regular.ttf');
+  logoFont7 = loadFont('ChelseaMarket-Regular.ttf');
+  logoFont8 = loadFont('Inconsolata-VariableFont_wdth,wght.ttf');
+  logoFont9 = loadFont('RubikMicrobe-Regular.ttf');
+  logoFont10 = loadFont('YatraOne-Regular.ttf');
+}
+// determines at random which logo to display
+function whichLogo() {
+  let sum = windowWidth + windowHeight;
+   console.log(sum/20);
+  
+  let logoRandomizer = floor(random(100));
+  fill(color(whichColor()))
+  translate(windowWidth/2, windowHeight/2)
+
+  if (logoRandomizer <= 25) {
+    return {
+      logoTranslate : 70,
+      logoFill : color1,
+      logoShape : ellipse(0, 0, sum/4),
+      logoText : "IF",
+      fontSize : 200,
+      textColor : whichColor()
+    } 
+      } else if (logoRandomizer > 25 && logoRandomizer <= 50) {
+        return {
+          logoTranslate : 0,
+          logoFill : whichColor(),
+          logoShape : rect( 0, 0, sum/ 2.5, sum/13),
+          logoText : "ITERATIVE FOUNDRY",
+          fontSize : random(sum/35, sum/45),
+          textColor : whichColor()
+        }
+      } else if (logoRandomizer > 50 && logoRandomizer <= 75) {
+        return {
+          logoTranslate : 0,
+          logoFill : whichColor(),
+          logoShape : rect( 0, 0, sum/ 3, sum/6),
+          logoText : "ITERATIVE\nFOUNDRY",
+          fontSize : random(sum/20,sum/25),
+          textColor : whichColor(),
+        }
+    } else {
+      return {
+        logoTranslate : 0,
+        logoShape : null,
+        logoText : whichText(),
+        logoFill : null,
+        fontSize : random(sum/25, sum/35),
+        textColor : whichColor(),
+      }
+   }
+}
+// determines which font to apply
+function whichFont() {
+  let fontRandomizer = floor(random(10));
+    if (fontRandomizer >= 0 && fontRandomizer < 1) {
+      return {
+        font : logoFont1,
+        weight : null
+      }
+    } else if (fontRandomizer >= 1 && fontRandomizer < 2) {
+      return {
+        font : logoFont2,
+        weight : floor(random(300, 700))
+      }
+    } else if (fontRandomizer >=2 && fontRandomizer < 3) {
+      return {
+        font : logoFont3
+      } 
+    } else if (fontRandomizer >=3 && fontRandomizer < 4) {
+      return {
+        font : logoFont4
+      }
+    } else if (fontRandomizer >=4 && fontRandomizer < 5) {
+      return {
+        font : logoFont5
+      }
+    } else if (fontRandomizer >=5 && fontRandomizer < 6) {
+      return {
+        font : logoFont6
+      }
+    } else if (fontRandomizer >=6 && fontRandomizer < 7) {
+      return {
+        font : logoFont7
+      }
+    } else if (fontRandomizer >=7 && fontRandomizer < 8) {
+      return {
+        font : logoFont8
+      }
+    } else if (fontRandomizer >=8 && fontRandomizer < 9) {
+      return {
+        font : logoFont9
+      }
+    } else {
+      return {
+        font : logoFont10
+      }
+    }
+}
+// determines which text to display
+function whichText() {
+  fill(color(whichColor()));
+let textRandomizer = floor(random(10));
+  if (textRandomizer >= 0 && textRandomizer < 3) {
+    return  'IF' 
+  } else if (textRandomizer >= 3 && textRandomizer < 7) {
+    return   'Iterative\nFoundry'
+  }
+  else {
+    return 'Iterative Foundry'
+  }
+}
+// determines whether or not to apply a stroke
+function whichStroke() {
+  let strokeRandomizer = random(10);
+  if (strokeRandomizer >=5) {
+    return noStroke()
+  } else {
+    return null
+  }
+}
+// determines which color to apply
+function whichColor() {
+  let colorRandomizer = floor(random(10));
+    if (colorRandomizer == 0) {
+      return '#E35E4650'
+    } else  if (colorRandomizer == 1) {
+      return '#A9463450'
+    } else if (colorRandomizer == 2) {
+      return '#731B2850'
+    } else if (colorRandomizer > 2 && colorRandomizer <= 8) {
+      return '#2B5D7550'
+    } else { 
+      return '#f5f1f0'
+    }
+}
+
+function draw() {
+  background(245,241,240);
+  whichStroke();
+  let logoData = whichLogo();
+  let fontData = whichFont();
+  let textData = logoData.logoText;
+  let whichColor1 = color(whichColor());
+  let whichColor2 = logoData.logoFill;
+  let fontColor = whichColor1;  
+}

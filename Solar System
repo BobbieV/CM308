@@ -1,0 +1,294 @@
+//we're gonna create a bunch of objects for the
+//asteroid belt and we're gonna store them in an array
+let ABOs = [];
+let numABOs;
+let heightABOs;
+let sizeABOs;
+
+//gonna also create an array of trans-Neptunian 
+//objects in the Kuiper Belt
+let TNOs = [];
+let numTNOs;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  
+  //we want somewhere between 1500-3000
+  //objects in the asteroid belt
+  numABOs = random(1500, 3000);
+  
+  //we need to assign some values to make
+  //each asteroid object unique, 
+  for (let i = 0; i < numABOs; i++) {
+    
+    //distributes the ABOs around the circle
+    let angleABOs = random(TWO_PI);
+    //places that circle between mars & jupiter
+    let radiusABOs = random(1304, 2010);
+    //creates a varying height for the objects
+    //in the belt so it's not a flat disk
+    let heightABOs = random(-120,120);
+  
+    //there are more smaller objects in the 
+    //asteroid belt so we will make it less
+    //likely that the randomly-assigned
+    //size is unrealistically large
+    let sizeRandomizerValue = random(0, 100);
+    
+    if (sizeRandomizerValue < 90) {
+      sizeABOs = random(0.01, 0.3)
+    }
+    if (sizeRandomizerValue >= 90 && sizeRandomizerValue <= 95) {
+      sizeABOs = random(0.3, 0.5)
+    }
+    if (sizeRandomizerValue > 95) {
+      sizeABOs = random(0.6, 0.8)
+    }
+    
+    //add the objects to the array with their
+    //unique data points for location & size
+    ABOs.push({
+      
+      //this section was supported by ChatGPT.
+      //I don't have a deep understanding of how
+      //cos and sin relate, but I think it's part of
+      //helping it move in circular direction
+      x: radiusABOs * cos(angleABOs),
+      z: radiusABOs * sin(angleABOs),
+      y: heightABOs,
+      size: sizeABOs
+    })
+  }
+  
+  //we want somewhere between 1000-1500
+  //Trans-Neptunian objects in our Kuiper Belt
+  numTNOs = random(1000, 1500);
+  
+  //we use the loop to generate them
+  for (let i = 0; i < numTNOs; i++) {
+    
+    //distribute the TNOs around a circle
+    let angleTNOs = random(TWO_PI);
+    //the location of the belt will be beyond Neptune
+    let radiusTNOs = random(5000, 8000);
+    //this creates a thickness to the belt
+    //so they don't all sit in a thin disk
+    let heightTNOs = random(-40, 40);
+    
+    //MY ORIGINAL COMMENTS:here we are assigning the unique data
+    //points to the TNOs and pushing them into our array
+    //CHATGPT COMMENT REVISION: I checked to make sure I understood--
+    //Create a new TNO with randomly generated orbital data.
+    // Convert its random angle and radius into x/z coordinates to place
+    // it somewhere along the Kuiper Belt ring. The y-value sets its
+    // slight vertical offset, and size gives each object its own scale.
+    // Then push this fully-defined TNO into the array.
+    TNOs.push({
+      x: radiusTNOs * cos(angleTNOs),
+      z: radiusTNOs * sin(angleTNOs),
+      y: heightTNOs,
+      size: random(0.02, 1)
+    })
+  }
+}
+  
+function draw() {
+  background("midnightblue");
+  orbitControl();
+  
+  noStroke();
+  
+  sun();
+  mercury();
+  venus();
+  earth();
+  mars();
+  asteroidBelt();
+  jupiter();
+  saturn();
+  uranus();
+  neptune();
+  kuiperBelt();
+}
+
+function colorTheSun() {
+
+  //we're gonna do some crazy stuff with the sun
+  
+  //first we declare 3 color variables
+  let goldSun = color(255, 250, 50);
+  let orangeSun = color(255, 215, 0);
+  let redSun = color(255, 165, 0);
+
+  //ChatGPT helped a lot with this
+  //we're creating a wave and designating
+  //that each color be represented during
+  //a portion of that wave
+  let t = sin(frameCount*0.05) % 1;
+  let mappedT = map(t, -1, 1, 0, 1);
+
+  //if the wave is in between any of the 
+  //values, we want it to create an inbetween
+  //color to help the visual transition
+  let sunColor;
+  
+  if (mappedT < 1/3) {
+    return lerpColor(goldSun, orangeSun, mappedT * 3);
+  } 
+  else if (mappedT < 2/3) {
+    return lerpColor(orangeSun, redSun, (mappedT - 1/3) * 3);
+  }
+  else {
+     return lerpColor(redSun, goldSun, (mappedT - 2/3) * 3);
+  }
+}
+
+function sun() {
+  //we want the color of the sun to be
+  //returned from the corresponding function
+  let sunColor = colorTheSun()
+  //the sun is kind of crazy. It's this big
+  //ball of exploding gas that isn't
+  //necessarily a static ball, so I want
+  //it to have a bit of a pulse to it
+  let sunSize = random(995, 1000)
+  //it is the primary light source
+  pointLight(255, 255, 255, 0, 0, 0)
+  push()
+  emissiveMaterial(sunColor)
+  sphere(sunSize);
+  pop()
+}
+
+function mercury() {
+  //orbital speed
+  rotateY(frameCount * 0.01136);
+  push();
+  translate(1078,0,0);
+  specularMaterial("darkgray")
+  sphere(3.503);
+  //rotation speed
+  rotateY(frameCount * 0.0034);
+  pop(); 
+}
+
+function venus() {
+  //orbital speed
+  rotateY(frameCount * 0.00444);
+  push();
+  translate(1144, 0, 0);
+  specularMaterial("khaki")
+  sphere(8.691);
+  //rotation speed
+  rotateY(frameCount * -0.00082);
+  pop();
+}
+
+function earth() {
+  //orbital speed
+  rotateY(frameCount * 0.00274);
+  push();
+  translate(1200, 0, 0);
+  specularMaterial("royalblue")  
+  sphere(9.149);
+  //rotation speed
+  rotateY(frameCount * 0.2);
+  pop(); 
+}
+
+function mars() {
+  //orbital speed
+  rotateY(frameCount * 0.00146);
+  push();
+  translate(1304, 0, 0);
+  specularMaterial("firebrick")  
+  sphere(4.868);
+  //rotation speed
+  rotateY(frameCount * 0.194);
+  pop();   
+}
+
+function asteroidBelt() {
+  push();
+  //orbital rotation speed
+  rotateY(frameCount * 0.01);
+  
+  for (let obj of ABOs) {
+    push();
+    translate(obj.x, obj.y, obj.z);
+    specularMaterial(200);
+    sphere(obj.size);
+    pop(); 
+  }
+  pop();  
+}
+
+function jupiter() {
+  //orbital speed
+  rotateY(frameCount * 0.00023);
+  push();
+  translate(2040, 0, 0);
+  specularMaterial("burlywood")  
+  sphere(100.39);
+  //rotation speed
+  rotateY(frameCount * 0.485);
+  pop();  
+}
+
+function saturn() {
+  //orbital speed
+  rotateY(frameCount * 0.000093);
+  //planet
+  push();
+  translate(2916, 0, 0);
+  specularMaterial("papayawhip")  
+  sphere(83.625);
+  //rotation speed
+  rotateY(frameCount * 0.448);
+  pop();
+  //ring
+  push();
+  translate(2916, 0, 0);
+  rotateX(HALF_PI);
+  fill(245, 245, 245, 50);
+  ellipsoid(192, 3, 192);
+  pop();
+}
+
+function uranus() {
+  //orbital speed
+  rotateY(frameCount * 0.000032);
+  push();
+  translate(4840, 0, 0);
+  specularMaterial("lightcyan")  
+  sphere(36.421);
+  rotateY(frameCount * -0.279);
+  pop();
+}
+
+function neptune() {
+  //orbital speed
+  rotateY(frameCount * 0.0000166)
+  push();
+  translate(7000, 0, 0);
+  specularMaterial("deepskyblue")  
+  sphere(35.359);
+  rotateY(frameCount * 0.298)
+  pop();
+}
+
+function kuiperBelt() {
+  push();
+  //orbital rotation
+  rotateY(frameCount * 0.00001);
+  //use the loop to create our unique TNOs
+  for (let obj of TNOs) {
+    push();
+    //place it in the unique location
+    translate(obj.x, obj.y, obj.z);
+    ambientMaterial(200);
+    sphere(obj.size);
+    pop();  
+  }
+  pop();
+}
